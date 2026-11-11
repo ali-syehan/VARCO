@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.VARQO" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:colorAccent">#0786A6</item>
+        <item name="android:statusBarColor">#0786A6</item>
+        <item name="android:navigationBarColor">#0786A6</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

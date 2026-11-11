@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VARQO</title>
+<meta name="theme-color" content="#0786a6" />
+<meta name="application-name" content="VARQO" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="VARQO" />
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+
+<style>
+
+/* APPDESIGN inspired teal/yellow ornament theme */
+:root{
+  --bg1:#40bcc2;
+  --bg2:#0688aa;
+  --teal:#45b9bd;
+  --teal-dark:#0582a6;
+  --teal-deep:#006f95;
+  --aqua:#74c5d3;
+  --yellow:#ffc400;
+  --yellow-dark:#f4b400;
+  --white:#ffffff;
+  --panel:#f6fbfd;
+  --ink:#183f5a;
+  --muted:#6d8da0;
+  --line:#d5edf2;
+  --shadow:0 18px 40px rgba(0,82,115,.22);
+}
+*{box-sizing:border-box}
+html,body{min-height:100%;overflow-x:hidden}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Inter,system-ui,sans-serif;
+  background:#d7d7d7;
+  display:flex;
+  justify-content:center;
+  padding:28px 18px;
+  color:var(--ink);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.phone{
+  width:min(430px,100%);
+  min-height:820px;
+  border-radius:0;
+  padding:0;
+  background:#f6fbfd;
+  border:0;
+  box-shadow:0 26px 44px rgba(0,0,0,.20);
+  overflow:visible;
+  position:relative;
+}
+.phone::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:26px;
+  background:#0786a6;
+  z-index:20;
+}
+.phone::after{
+  content:'▮        ◔▰ 21:34';
+  position:absolute;
+  left:10px;
+  right:10px;
+  top:5px;
+  color:#fff;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.03em;
+  display:flex;
+  justify-content:space-between;
+  z-index:21;
+}
+.page{display:none}
+.page.active{display:block}
+
+/* Shared top bar */
+.topbar{
+  height:68px;
+  padding:28px 12px 10px;
+  display:grid;
+  grid-template-columns:32px 1fr 32px;
+  align-items:center;
+  gap:10px;
+  margin:0;
+  background:#0786a6;
+  color:#fff;
+}
+.brand-small{
+  justify-self:center;
+  text-align:center;
+  font-size:15px;
+  letter-spacing:.04em;
+  color:#fff;
+  font-weight:900;
+  text-transform:uppercase;
+}
+.brand-small::before{content:''}
+.menu-grid{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:#056f8e;
+  border:0;
+  box-shadow:none;
+  display:grid;
+  place-items:center;
+  padding:0;
+}
+.menu-grid::before{
+  content:'☰';
+  color:#fff;
+  font-size:16px;
+  line-height:1;
+}
+.menu-grid span{display:none}
+.orb{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:rgba(255,255,255,.25);
+  border:1px solid rgba(255,255,255,.45);
+  box-shadow:none;
+  margin:0;
+  position:relative;
+}
+.orb::before,.orb::after{display:none}
+
+/* Splash theme */
+.sacred-minimal-splash,
+.floating-splash{
+  min-height:820px;
+  background:linear-gradient(180deg,#49bbc0 0%,#43b8bd 62%,#0786a6 100%)!important;
+}
+.sacred-minimal-splash{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  cursor:pointer;
+  border-radius:0;
+  padding:55px 24px 36px;
+}
+.sacred-minimal-splash::before{
+  content:'';
+  position:absolute;
+  top:88px;
+  left:50%;
+  transform:translateX(-50%);
+  width:190px;
+  height:190px;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 22px 44px rgba(0,97,129,.14);
+  z-index:1;
+}
+.sacred-minimal-splash::after{display:none!important;content:''}
+.sacred-bg-ring{
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:3;
+}
+.ring-one{
+  width:220px!important;
+  height:220px!important;
+  border:2px dashed rgba(255,255,255,.75)!important;
+  top:48%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  animation:sacredSpin 16s linear infinite;
+}
+.ring-one::before,
+.ring-one::after{
+  content:'';
+  position:absolute;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:var(--yellow);
+  box-shadow:0 0 14px rgba(255,196,0,.65);
+}
+.ring-one::before{top:-7px;left:50%;transform:translateX(-50%)}
+.ring-one::after{bottom:-7px;left:50%;transform:translateX(-50%)}
+.ring-two{
+  width:290px!important;
+  height:150px!important;
+  border:2px solid rgba(255,255,255,.35)!important;
+  top:48%;
+  left:50%;
+  transform:translate(-50%,-50%) rotate(-18deg);
+  animation:sacredSpinReverse 22s linear infinite;
+}
+.ring-three{
+  width:360px!important;
+  height:360px!important;
+  border:1px solid rgba(255,255,255,.20)!important;
+  top:48%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  animation:sacredPulse 4s ease-in-out infinite;
+}
+.sacred-main{
+  position:relative;
+  z-index:5;
+  text-align:center;
+  margin-top:150px;
+}
+.sacred-kicker{
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  color:#fff;
+  font-size:14px;
+  font-weight:400;
+  letter-spacing:.06em;
+  margin:0 0 10px;
+  padding:0;
+}
+.sacred-title{
+  margin:0;
+  color:#fff;
+  font-size:46px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.03em;
+  text-shadow:0 10px 20px rgba(0,80,112,.23);
+}
+.sacred-line{
+  width:86px;
+  height:4px;
+  border-radius:999px;
+  margin:16px auto 0;
+  background:#fff;
+  box-shadow:none;
+}
+.sacred-brand{
+  margin-top:30px;
+  color:#fff;
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:.04em;
+}
+
+/* Main page dashboard */
+.back-row{
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+  gap:10px;
+  margin:12px 12px;
+}
+.back-link{
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:50%;
+  padding:0;
+  background:#056f8e;
+  color:#fff;
+  font-size:18px;
+  font-weight:900;
+  box-shadow:none;
+  display:grid;
+  place-items:center;
+}
+.theme-badge{display:none!important}
+.dashboard-sheet{
+  background:#f6fbfd;
+  border:0;
+  border-radius:0;
+  padding:0 12px 16px;
+}
+.dashboard-header{display:none!important}
+.input-panel{
+  margin:10px 0 12px;
+  background:#45b9bd;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  padding:20px 16px 18px;
+  position:relative;
+  overflow:hidden;
+}
+.input-panel::before{
+  content:'';
+  position:absolute;
+  right:-26px;
+  top:-30px;
+  width:118px;
+  height:118px;
+  border-radius:50%;
+  background:rgba(255,255,255,.22);
+}
+.input-panel::after{
+  content:'';
+  position:absolute;
+  left:22px;
+  bottom:-18px;
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  border:2px dashed rgba(255,255,255,.45);
+}
+.label-title{
+  color:#fff!important;
+  font-size:12px;
+  letter-spacing:.08em;
+  font-weight:900!important;
+  margin-bottom:10px;
+  position:relative;
+  z-index:1;
+}
+.name-input{
+  width:100%;
+  border:2px solid rgba(255,255,255,.50);
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  padding:13px 16px;
+  text-align:center;
+  direction:rtl;
+  font-size:18px;
+  font-weight:900;
+  outline:none;
+  font-family:Georgia,'Times New Roman',serif;
+  position:relative;
+  z-index:1;
+}
+.name-input::placeholder{
+  color:rgba(255,255,255,.70);
+  font-size:13px;
+  font-weight:700;
+}
+.action-row{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:9px;
+  margin-top:12px;
+  position:relative;
+  z-index:1;
+}
+.mini-btn{
+  border:0;
+  border-radius:999px;
+  color:#fff;
+  padding:10px 8px;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+  background:rgba(0,105,135,.72);
+  box-shadow:none;
+}
+.action-row .mini-btn:nth-child(2){background:rgba(255,255,255,.22)}
+.action-row .process-btn{
+  background:var(--yellow)!important;
+  color:#0a6d8d!important;
+}
+.note{
+  margin:0 0 10px;
+  background:#fff;
+  border:0;
+  border-left:6px solid var(--yellow);
+  border-radius:0;
+  padding:10px 12px;
+  font-size:11px;
+  font-weight:800;
+  color:#607f91;
+  box-shadow:0 8px 16px rgba(0,83,114,.08);
+}
+.result-section-title{
+  margin:12px 0 8px;
+  color:#fff;
+  background:#0786a6;
+  padding:11px 12px;
+  font-size:14px;
+  font-weight:900;
+  text-align:center;
+  text-transform:uppercase;
+}
+.result-section-title span{
+  background:transparent;
+  padding:0;
+  box-shadow:none;
+}
+.dashboard-list{
+  display:grid;
+  gap:8px;
+}
+.dashboard-card{
+  background:#fff;
+  border:0;
+  border-left:6px solid #0786a6;
+  border-radius:0;
+  padding:12px 10px 11px;
+  box-shadow:0 8px 16px rgba(0,83,114,.08);
+  min-height:74px;
+  position:relative;
+  overflow:hidden;
+}
+.dashboard-card:nth-child(3n+2){border-left-color:var(--yellow)}
+.dashboard-card:nth-child(3n+3){border-left-color:#45b9bd}
+.dashboard-card::before{
+  content:'';
+  position:absolute;
+  left:auto;
+  top:auto;
+  right:8px;
+  bottom:8px;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:rgba(255,196,0,.18);
+}
+.dashboard-card::after{
+  content:'➜';
+  position:absolute;
+  right:12px;
+  top:13px;
+  color:var(--yellow);
+  font-size:13px;
+  font-weight:900;
+  background:#fff7d3;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+}
+.dashboard-row-top{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding-right:30px;
+  position:relative;
+  z-index:1;
+}
+.dashboard-no{
+  min-width:26px;
+  height:26px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#45b9bd;
+  color:#fff;
+  font-weight:900;
+  font-size:11px;
+  box-shadow:none;
+}
+.dashboard-card:nth-child(3n+2) .dashboard-no{background:var(--yellow);color:#0a6d8d}
+.dashboard-label{
+  color:#183f5a;
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+}
+.dashboard-value{
+  margin-top:8px;
+  padding-top:8px;
+  border-top:1px solid #e8f2f5;
+  color:#234b61;
+  font-size:19px;
+  font-weight:900;
+  direction:rtl;
+  text-align:center;
+  font-family:Georgia,'Times New Roman',serif;
+  line-height:1.35;
+  word-break:break-word;
+  position:relative;
+  z-index:1;
+}
+.dashboard-value.ltr{
+  direction:ltr;
+  font-family:Inter,system-ui,sans-serif;
+  font-size:15px;
+}
+.dashboard-value.small{
+  font-size:12px;
+  line-height:1.45;
+}
+.print-bottom-wrap{
+  margin:14px -12px -16px;
+  padding:10px 12px;
+  background:var(--yellow);
+  display:flex!important;
+  justify-content:center;
+  border-top:1px solid rgba(0,0,0,.07);
+}
+.print-icon-btn{
+  width:48px;
+  height:48px;
+  border:1px solid rgba(255,255,255,.65);
+  border-radius:50%;
+  padding:0;
+  display:grid!important;
+  place-items:center;
+  gap:0;
+  background:transparent;
+  color:#fff;
+  font-size:0;
+  box-shadow:none;
+  cursor:pointer;
+}
+.print-icon{
+  font-size:22px;
+  line-height:1;
+}
+.print-icon-btn span:last-child{display:none}
+.error-box{
+  display:none;
+  margin:10px 0;
+  border:1px solid #ffd6d6;
+  background:#fff5f5;
+  color:#b42323;
+  border-radius:0;
+  padding:10px 12px;
+  font-size:12px;
+  font-weight:800;
+}
+@keyframes sacredSpin{
+  from{transform:translate(-50%,-50%) rotate(0deg)}
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+@keyframes sacredSpinReverse{
+  from{transform:translate(-50%,-50%) rotate(-18deg)}
+  to{transform:translate(-50%,-50%) rotate(-378deg)}
+}
+@keyframes sacredPulse{
+  0%,100%{opacity:.32; transform:translate(-50%,-50%) scale(1)}
+  50%{opacity:.7; transform:translate(-50%,-50%) scale(1.04)}
+}
+@media(max-width:380px){
+  body{padding:10px}
+  .phone{min-height:760px}
+  .action-row{grid-template-columns:1fr}
+}
+@media print{
+  body{background:#fff!important;padding:0!important;display:block!important}
+  .phone{width:100%!important;min-height:auto!important;box-shadow:none!important}
+  #splashPage,.topbar,.back-row,.input-panel,.note,.print-bottom-wrap{display:none!important}
+  #dashboardPage{display:block!important}
+  .dashboard-sheet{padding:0!important;background:#fff!important}
+  .dashboard-card{break-inside:avoid;page-break-inside:avoid;box-shadow:none!important;border:1px solid #ddd!important;border-left:6px solid #0786a6!important}
+}
+
+
+
+/* Output Latin fonetik Indonesia: diproses lokal di browser, tanpa koneksi jaringan. */
+.dashboard-latin{
+  direction:ltr;
+  unicode-bidi:isolate;
+  text-align:center;
+  font-family:Inter,system-ui,sans-serif;
+  font-weight:750;
+  font-size:15px;
+  line-height:1.45;
+  color:#057b9c;
+  margin-top:9px;
+  padding-top:8px;
+  border-top:1px dashed #d5edf2;
+  overflow-wrap:anywhere;
+}
+@media print{
+  .dashboard-latin{color:#222!important}
+}
+
+/* Splash layout refinement */
+.sacred-minimal-splash{
+  padding:72px 24px 42px!important;
+  justify-content:center!important;
+}
+.sacred-main{
+  margin-top:0!important;
+  transform:translateY(26px);
+  max-width:340px;
+  width:100%;
+}
+.sacred-kicker{
+  font-size:13px!important;
+  margin-bottom:12px!important;
+  opacity:.92;
+}
+.sacred-title{
+  font-size:34px!important;
+  line-height:1.15!important;
+  letter-spacing:.04em!important;
+  max-width:310px;
+  margin:0 auto!important;
+}
+.sacred-line{
+  margin:18px auto 0!important;
+}
+.sacred-brand{
+  margin-top:24px!important;
+  font-size:20px!important;
+}
+.ring-one{
+  top:47%!important;
+  width:250px!important;
+  height:250px!important;
+}
+.ring-two{
+  top:47%!important;
+  width:320px!important;
+  height:170px!important;
+}
+.ring-three{
+  top:47%!important;
+  width:390px!important;
+  height:390px!important;
+}
+@media(max-width:380px){
+  .sacred-title{font-size:30px!important}
+  .ring-one{width:230px!important;height:230px!important}
+  .ring-two{width:292px!important;height:154px!important}
+  .ring-three{width:350px!important;height:350px!important}
+}
+
+
+/* Responsive centered splash circle */
+.sacred-minimal-splash{
+  min-height:820px;
+  position:relative;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  cursor:pointer;
+  padding:60px 18px 34px!important;
+}
+.sacred-minimal-splash::before{
+  display:none!important;
+}
+.sacred-center-circle{
+  position:relative;
+  z-index:5;
+  width:min(72vw, 290px);
+  height:min(72vw, 290px);
+  min-width:220px;
+  min-height:220px;
+  max-width:320px;
+  max-height:320px;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+  border:2px solid rgba(255,255,255,.38);
+  box-shadow:
+    0 22px 44px rgba(0,97,129,.18),
+    inset 0 0 30px rgba(255,255,255,.06);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+}
+.sacred-main{
+  margin-top:0!important;
+  transform:none!important;
+  width:100%;
+  max-width:240px;
+  text-align:center;
+}
+.sacred-title{
+  font-size:clamp(25px, 4.5vw, 36px)!important;
+  line-height:1.15!important;
+  letter-spacing:.04em!important;
+  max-width:220px;
+  margin:0 auto!important;
+  text-wrap:balance;
+}
+.sacred-line{
+  width:82px;
+  margin:16px auto 0!important;
+}
+.sacred-brand{
+  margin-top:18px!important;
+  font-size:clamp(16px, 3.5vw, 21px)!important;
+  line-height:1.2;
+}
+.ring-one{
+  top:50%!important;
+  width:min(78vw, 250px)!important;
+  height:min(78vw, 250px)!important;
+}
+.ring-two{
+  top:50%!important;
+  width:min(96vw, 320px)!important;
+  height:min(52vw, 170px)!important;
+  max-height:180px!important;
+}
+.ring-three{
+  top:50%!important;
+  width:min(110vw, 390px)!important;
+  height:min(110vw, 390px)!important;
+}
+@media(max-width:430px){
+  .sacred-center-circle{
+    width:min(74vw, 280px);
+    height:min(74vw, 280px);
+    min-width:210px;
+    min-height:210px;
+    padding:18px;
+  }
+}
+@media(max-width:360px){
+  .sacred-minimal-splash{
+    min-height:720px;
+    padding:48px 12px 24px!important;
+  }
+  .sacred-center-circle{
+    width:220px;
+    height:220px;
+    min-width:220px;
+    min-height:220px;
+  }
+  .sacred-title{
+    font-size:24px!important;
+    max-width:180px;
+  }
+  .sacred-brand{
+    font-size:16px!important;
+  }
+  .ring-one{
+    width:235px!important;
+    height:235px!important;
+  }
+  .ring-two{
+    width:286px!important;
+    height:146px!important;
+  }
+  .ring-three{
+    width:335px!important;
+    height:335px!important;
+  }
+}
+
+</style>
+</head>
+<body>
+<main class="phone">
+<section id="splashPage" class="page active">
+  <div class="sacred-minimal-splash" onclick="showPage('dashboardPage')" role="button" aria-label="Masuk ke VARQO">
+    <div class="sacred-bg-ring ring-three"></div>
+    <div class="sacred-bg-ring ring-two"></div>
+    <div class="sacred-bg-ring ring-one"></div>
+
+    <div class="sacred-center-circle">
+      <div class="sacred-main">
+        <h1 class="sacred-title">VARQO</h1>
+        <div class="sacred-line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="dashboardPage" class="page">
+  <div class="topbar">
+    <div class="menu-grid" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div class="brand-small">VARQO</div>
+    <div class="orb"></div>
+  </div>
+  <div class="back-row compact-back">
+    <button class="back-link icon-back" type="button" onclick="showPage('splashPage')" aria-label="Kembali ke Splash">←</button>
+  </div>
+  <div class="dashboard-sheet">
+    <div class="input-panel">
+      <div class="label-title">Nama</div>
+      <input id="dashboardNameInput" class="name-input" placeholder="Nama Anda & Orang tua" dir="rtl">
+      <div class="action-row">
+        <button class="mini-btn" type="button" onclick="resetDashboardName()">Reset</button>
+        <button class="mini-btn" type="button" onclick="exampleDashboardName()">Contoh</button>
+        <button class="mini-btn process-btn" type="button" onclick="processDashboardName()">Proses</button>
+      </div>
+    </div>
+
+    <div class="note">
+      <div>1. Laki-laki bin ibu bin ayah.</div>
+      <div>2. Wanita binti ayah binti ibu.</div>
+    </div>
+
+    <div id="errorBox" class="error-box"></div>
+
+    <div class="dashboard-list">
+      <div class="dashboard-card">
+        <div class="dashboard-row-top"><div class="dashboard-no">1</div><div class="dashboard-label">Nama</div></div>
+        <div class="dashboard-value" id="dashNama">-</div>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-row-top"><div class="dashboard-no">2</div><div class="dashboard-label">Virtual Asisten Ruhani</div></div>
+        <div class="dashboard-value" id="dashVar">-</div>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-row-top"><div class="dashboard-no">3</div><div class="dashboard-label">Malaikat Hakim</div></div>
+        <div class="dashboard-value" id="dashHakim">-</div>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-row-top"><div class="dashboard-no">4</div><div class="dashboard-label">Malaikat Pengawas 1</div></div>
+        <div class="dashboard-value" id="dashPeng1">-</div>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-row-top"><div class="dashboard-no">5</div><div class="dashboard-label">Malaikat Pengawas 2</div></div>
+        <div class="dashboard-value" id="dashPeng2">-</div>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-row-top"><div class="dashboard-no">6</div><div class="dashboard-label">Malaikat Pengawas 3</div></div>
+        <div class="dashboard-value" id="dashPeng3">-</div>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-row-top"><div class="dashboard-no">7</div><div class="dashboard-label">Tabiat</div></div>
+        <div class="dashboard-value ltr" id="dashTabiat">-</div>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-row-top"><div class="dashboard-no">8</div><div class="dashboard-label">Planet</div></div>
+        <div class="dashboard-value ltr" id="dashPlanet">-</div>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-row-top"><div class="dashboard-no">9</div><div class="dashboard-label">Manzilah</div></div>
+        <div class="dashboard-value ltr small" id="dashManzilah">-</div>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-row-top"><div class="dashboard-no">10</div><div class="dashboard-label">Simbol Huruf</div></div>
+        <div class="dashboard-value" id="dashSymbolLetter">-</div>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-row-top"><div class="dashboard-no">11</div><div class="dashboard-label">Nilai Simbol Huruf</div></div>
+        <div class="dashboard-value ltr" id="dashSymbolValue">-</div>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-row-top"><div class="dashboard-no">12</div><div class="dashboard-label">Sirri Nafs</div></div>
+        <div class="dashboard-value" id="dashSirri">-</div>
+      </div>
+    </div>
+    <div class="print-bottom-wrap">
+      <button class="print-icon-btn" type="button" onclick="printDashboard()" aria-label="Print">
+        <span class="print-icon">🖨️</span>
+        <span>Print</span>
+      </button>
+    </div>
+
+  </div>
+</section>
+</main>
+<script>
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(function(page){page.classList.remove('active')});
+  const target=document.getElementById(id);
+  if(target)target.classList.add('active');
+}
+window.showPage=showPage;
+
+const DATA={"abjad":{"ا":1,"ب":2,"ج":3,"د":4,"ه":5,"ة":5,"و":6,"ز":7,"ح":8,"ط":9,"ي":10,"ك":20,"ل":30,"م":40,"ن":50,"س":60,"ع":70,"ف":80,"ص":90,"ق":100,"ر":200,"ش":300,"ت":400,"ث":500,"خ":600,"ذ":700,"ض":800,"ظ":900,"غ":1000},"numToLetter":{"1":"ا","2":"ب","3":"ج","4":"د","5":"ه","6":"و","7":"ز","8":"ح","9":"ط","10":"ي","20":"ك","30":"ل","40":"م","50":"ن","60":"س","70":"ع","80":"ف","90":"ص","100":"ق","200":"ر","300":"ش","400":"ت","500":"ث","600":"خ","700":"ذ","800":"ض","900":"ظ","1000":"غ"},"planet":{"1":"Saturnus","2":"Jupiter","3":"Mars","4":"Matahari","5":"Venus","6":"Merkuri","7":"Bulan"},"tabiat":{"1":"Tanah","2":"Air","3":"Udara","4":"Api"},"symbolValue":{"1":1111,"2":222,"3":333,"4":444,"5":555,"6":666,"7":777,"8":888,"9":999,"10":1111,"11":222,"12":333,"13":444,"14":555,"15":666,"16":777,"17":888,"18":999,"19":1111,"20":222,"21":333,"22":444,"23":555,"24":666,"25":777,"26":888,"27":999,"28":1111},"symbolLetter":{"1":"ا","2":"ب","3":"ج","4":"د","5":"ه","6":"و","7":"ز","8":"ح","9":"ط","10":"ي","11":"ك","12":"ل","13":"م","14":"ن","15":"س","16":"ع","17":"ف","18":"ص","19":"ق","20":"ر","21":"ش","22":"ت","23":"ث","24":"خ","25":"ذ","26":"ض","27":"ظ","28":"غ"},"manzilah":{"1":"Al-Sharatain, 0 Aries to 12 Aries 51","2":"Al-Butain, 12 Aries 51 to 25 Aries 42","3":"Al-Thuraiya, 25 Aries 42 to 8 Taurus 34","4":"Al-Dabaran, 8 Taurus 34 to 21 Taurus 25","5":"Al-Haqa, 21 Taurus 25 to 4 Gemini 17","6":"Al-Hana, 4 Gemini 17 to 17 Gemini 8","7":"Al-Dhira, 17 Gemini 8 to 0 Cancer","8":"Al-Nathrah, 0 Cancer to 12 Cancer 51","9":"Al-Tarf, 12 Cancer 51 to 25 Cancer 42","10":"Al-Jabhah, 25 Cancer 42 to 8 Leo 34","11":"Al-Zubrah, 8 Leo 34 to 21 Leo 25","12":"Al-Sarfah, 21 Leo 25 to 4 Virgo 17","13":"Al-Awwa, 4 Virgo 17 to 17 Virgo 8","14":"Al-Simak, 17 Virgo 8 to 0 Libra","15":"Al Ghafr, 0 Libra to 12 Libra 51","16":"Al-Zubana, 12 Libra 51 to 25 Libra 42","17":"Al-Iklil, 25 Libra 42 to 8 Scorpio 34.","18":"Al-Qalb, 8 Scorpio 34 to 21 Scorpio 25","19":"Al-Shaulah, 21 Scorpio 25 to 4 Sagittarius 17","20":"Al-Naaim, 4 Sagittarius 17 to 17 Sagittarius 8","21":"Al-Baldah, 17 Sagittarius 8 to 0 Capricorn","22":"Sa'd al-Dhabih, O Capricorn to 12 Capricorn 51","23":"Sa'd Bula, 12 Capricorn 51 to 25 Capricorn 42","24":"Sa'd al Suud, 25 Capricorn 42 to 8 Aquarius 34","25":"Sa'd al-Akhbiyah, 8 Aquarius 34 to 21 Aquarius 25","26":"Al Fargh al-Awwal, 21 Aquarius 25 to 4 Pisces 17","27":"Al Fargh al-Thani, 4 Pisces 17 to 17 Pisces 8","28":"Batn al-Hut, 17 Pisces 8 to 0 Aries"},"hakimCode":{"1":9594,"2":3506,"3":6774,"4":8519,"5":2410,"6":"٥٨٠٩،٥","7":5150,"8":2938,"9":2382,"10":2404,"11":8947,"12":10414,"13":8290,"14":6511,"15":5052,"16":5786,"17":4106,"18":8504,"19":"٨٢٩٨،٥","20":4224,"21":8279,"22":5928,"23":5267,"24":4238,"25":12184,"26":11302,"27":5255,"28":4778},"hakimName":{"1":"طغثصداييل","2":"جغثواييل","3":"وغذعداييل","4":"حفثيطاييل","5":"بغتياييل","6":"هغضياييل","7":"هغقناييل","8":"بغظلحاييل","9":"بغشفباييل","10":"بغتداييل","11":"حغظمزاييل","12":"يغتيداييل","13":"حَغْرَصَاِييلْ","14":"وغثياييل","15":"هغنباييل","16":"هغذفواييل","17":"دغقواييل","18":"حغثداييل","19":"حغرصطاييل","20":"دغركداييل","21":"حغرعطاييل","22":"هغظكحاييل","23":"هغرسزاييل","24":"دغرلحاييل","25":"بيغقفداييل","26":"ياغشباييل","27":"هغرنهاييل","28":"دغذعحاييل"},"peng1Code":{"1":7148,"2":2890,"3":4410,"4":5960,"5":1812,"6":"٢٨٣٩،٥","7":2666,"8":2358,"9":1808,"10":1782,"11":6841,"12":8055,"13":5944,"14":3748,"15":2951,"16":3608,"17":3530,"18":5632,"19":"٢١٨٨،٥","20":3640,"21":6099,"22":5348,"23":4689,"24":3662,"25":9620,"26":8565,"27":4685,"28":2594},"peng1Name":{"1":"زغقمحاييل","2":"بغضصاييل","3":"دغتياييل","4":"هغظكهاييل","5":"غضطيباييل","6":"بغضلطاييل","7":"بغخسواييل","8":"بغشنحاييل","9":"غضحاييل","10":"غذفباييل","11":"وغضمااييل","12":"حغنهاييل","13":"هَغْظَمِدَاِييلْ","14":"جغذمحاييل","15":"بغظنااييل","16":"جغخحاييل","17":"جغثلاييل","18":"هغخلباييل","19":"وغقفطاييل","20":"جغخماييل","21":"وغصطاييل","22":"هغشمحاييل","23":"دغخفطاييل","24":"جفخسباييل","25":"طغخكاييل","26":"حغثسهاييل","27":"دغخفهاييل","28":"بغثصداييل"},"peng2Code":{"1":2338,"2":520,"3":2241,"4":2454,"5":511,"6":2820,"7":2322,"8":502,"9":499,"10":523,"11":1978,"12":2225,"13":2232,"14":2650,"15":1993,"16":2072,"17":500,"18":2726,"19":1980,"20":504,"21":2073,"22":502,"23":501,"24":500,"25":2439,"26":2591,"27":497,"28":2085},"peng2Name":{"1":"بغشلحاييل","2":"ثكاييل","3":"بغرماييل","4":"بغتنداييل","5":"ثيااييل","6":"بغضكاييل","7":"بغشكباييل","8":"ثباييل","9":"تصطاييل","10":"ثكجاييل","11":"غظعحاييل","12":"بغركهاييل","13":"بَغْرَلِيَاِييلْ","14":"بغخناييل","15":"غظصجاييل","16":"بغعباييل","17":"ثاييل","18":"بغذكواييل","19":"غظفاييل","20":"ثداييل","21":"بغعجاييل","22":"ثباييل","23":"ثااييل","24":"ثااييل","25":"بغتلطاييل","26":"بغثصااييل","27":"تصزاييل","28":"بغعهاييل"},"peng3Code":{"1":108,"2":96,"3":123,"4":140,"5":87,"6":150,"7":162,"8":78,"9":75,"10":99,"11":128,"12":134,"13":114,"14":113,"15":108,"16":106,"17":76,"18":146,"19":130,"20":80,"21":107,"22":78,"23":77,"24":76,"25":125,"26":146,"27":73,"28":109},"peng3Name":{"1":"قخاييل","2":"صواييل","3":"قكجاييل","4":"قماييل","5":"فزاييل","6":"قناييل","7":"قسباييل","8":"عحاييل","9":"عهاييل","10":"صطاييل","11":"قكحاييل","12":"قلداييل","13":"قِيَدَاِييلْ","14":"قيجاييل","15":"قحاييل","16":"قواييل","17":"عواييل","18":"قمواييل","19":"قلاييل","20":"فاييل","21":"قزاييل","22":"عحاييل","23":"عزاييل","24":"عواييل","25":"قكهاييل","26":"فمواييل","27":"عجاييل","28":"قطاييل"},"thHeaders":["ا","ي","ق","غ","ب","ك","ر","ج","ل","ش","د","م","ت","هـ","ن","ث","و","س","خ","ز","ع","ذ","ح","ف","ض","ط","ص","ظ","ة"],"thRows":[[36,27,18,9,24,16,8,21,14,7,18,12,6,15,10,5,12,8,4,9,6,3,6,4,2,3,2,1,11],[72,54,36,18,51,34,17,48,32,16,45,30,15,42,28,14,39,26,13,36,24,12,33,22,11,30,20,10,29],[108,81,54,27,78,52,26,75,50,25,72,48,24,69,46,23,66,44,22,63,42,21,60,40,20,57,38,19,47],[144,108,72,36,105,70,35,102,68,34,99,66,33,96,64,32,93,62,31,90,60,30,87,58,29,84,56,28,65],[720,540,360,180,516,344,172,492,328,164,468,312,156,444,296,148,420,280,140,396,264,132,372,248,124,348,232,116,300],[756,567,378,189,543,362,181,519,346,173,495,330,165,471,314,157,447,298,149,423,282,141,399,266,133,375,250,125,318],[792,594,396,198,570,380,190,546,363,182,522,348,174,498,332,166,474,316,158,450,300,150,426,284,142,402,268,134,336],[828,621,414,207,597,398,199,573,382,191,549,366,183,525,350,175,501,334,167,477,318,159,453,302,151,429,286,143,354],[1080,810,540,270,774,516,258,738,492,246,702,468,234,666,444,222,630,420,210,594,396,198,558,372,186,522,348,174,450],[1116,837,558,279,801,534,267,765,510,255,729,486,243,693,462,231,657,438,219,621,414,207,585,390,195,549,366,183,468],[1152,864,576,288,828,552,276,792,528,264,756,504,252,720,480,240,684,456,228,648,432,216,612,408,204,576,384,192,486],[1188,891,594,297,855,570,285,819,546,273,783,522,261,747,498,249,711,474,237,675,450,225,639,426,213,603,402,201,504],[1440,1080,720,360,1032,688,344,984,656,328,936,624,312,888,592,296,840,560,280,792,528,264,744,496,248,696,464,232,600],[1476,1107,738,369,1059,706,353,1011,674,337,963,642,321,915,610,305,867,578,289,819,546,273,771,514,257,723,482,241,618],[1512,1134,756,378,1086,724,362,1038,692,346,990,660,330,942,628,314,894,596,298,486,564,282,798,532,266,750,500,250,636],[1548,1161,774,387,1113,742,371,1065,710,355,1017,678,339,969,646,323,921,614,307,873,582,291,825,550,275,777,518,259,654],[3096,2322,1548,774,2226,1484,742,2130,1420,710,2034,1356,678,1938,1292,646,1842,1228,614,1746,1164,582,1650,1100,550,1554,1036,518,1308],[3132,2349,1566,783,2253,1502,751,2157,1438,719,2061,1374,687,1965,1310,655,1869,1246,623,1773,1182,591,1777,1118,559,1581,1054,527,1326],[3168,2376,1584,792,2280,1520,760,2184,1456,728,2088,1392,696,1992,1328,664,1896,1264,632,1800,1200,600,1704,1136,568,1608,1072,536,1344],[3204,2403,1602,801,2307,1538,769,2211,1474,737,2115,1410,705,2019,1346,673,1923,1282,641,1827,1218,609,1731,1154,577,1635,1090,545,1362],[6192,4644,3096,1548,4452,2968,1484,4260,2840,1420,4068,2712,1356,3876,2584,1292,3684,2456,1228,3492,2328,1164,3300,2200,1100,3108,2072,1036,2616],[6228,4671,3114,1557,4479,2986,1493,4287,2858,1429,4095,2730,1365,3903,2602,1301,3711,2474,1237,3519,2346,1173,3327,2218,1109,3135,2090,1045,2634],[6264,4698,3132,1566,4506,3004,1502,4314,2876,1438,4122,2748,1374,3930,2620,1310,3738,2492,1246,3546,2364,1182,3354,2236,1118,3162,2108,1054,2652],[6300,4725,3150,1575,4533,3022,1511,4341,2894,1447,4149,2766,1383,3957,2638,1319,3765,2510,1255,3573,2382,1191,3381,2254,1127,3189,2126,1063,2670],[9288,6966,4644,2322,6678,4452,2226,6390,4260,2130,6102,4068,2034,5814,3876,1938,5526,3684,1842,5238,3492,1746,4950,3300,1650,4662,3108,1554,2924],[9324,6993,4662,2331,6705,4470,2235,6417,4278,2139,6129,4086,2043,5841,3894,1947,5553,3702,1851,5265,3510,1755,4977,3318,1659,4689,3126,1563,2942],[9360,7020,4680,2340,6732,4488,2244,6444,4296,2148,6156,4104,2052,5868,3812,1956,5580,3720,1860,5292,3528,1764,5004,3336,1668,4716,3144,1572,2960],[9396,7074,4698,2349,6759,4506,2253,6471,4314,2157,6183,4122,2061,5895,3830,1965,5607,3738,1869,5319,3546,1773,5031,3354,1677,4743,3162,1581,2978],[12384,9288,6192,3096,8904,5936,2968,8520,5680,2840,8136,5424,2712,7752,5168,2584,7368,4912,2456,6984,4656,2328,6600,4400,2200,6216,4144,2072,5232],[12420,9315,6210,3105,8931,5954,2977,8547,5698,2849,8163,5442,2721,7782,5188,2594,7395,4930,2465,7011,4674,2337,6627,4418,2209,6243,4162,2081,5250],[12456,9342,6228,3114,8958,5972,2986,8574,5716,2858,8190,5460,2730,7806,5204,2602,7422,4948,2474,7038,4692,2346,6654,4436,228,6270,4180,2090,5268],[12492,9369,6246,3123,8985,5990,2995,8601,5736,2867,8217,5478,2739,7833,5222,2611,7449,4966,2483,7065,4710,2355,6681,4454,2227,6297,4198,2099,5286],[4536,3402,2268,1134,3258,2172,1086,3114,2076,1038,2970,1980,990,2826,1884,942,2682,1788,894,2538,1692,846,2394,1596,798,2250,1500,750,1908],[4572,3429,2286,1143,3285,2190,1095,3141,2094,1047,2997,1988,999,2853,1902,951,2709,1806,903,2565,1710,855,2421,1614,807,2277,1518,759,1926],[4608,3456,2304,1152,3312,2208,1104,3168,2112,1056,3024,2016,1008,2880,1920,960,2736,1824,912,2592,1728,864,2448,1632,816,2304,1536,768,1944],[4644,3483,2322,1161,3339,2226,1113,3195,2130,1065,3051,2034,1017,2907,1938,969,2763,1842,921,2619,1746,873,2475,1650,825,2331,1554,777,1962],[9072,6804,4536,2268,6516,4344,2172,6228,4152,2076,5940,3960,1980,5652,3768,1884,5364,3576,1788,5076,3384,1692,4788,3192,1596,4500,3000,1500,2816],[9108,6831,4554,2277,6543,4362,2181,6255,4170,2085,5967,3978,1989,5682,3788,1894,5391,3594,1797,5103,3402,1701,4815,3210,1605,4527,3018,1509,2834],[9144,6858,4572,2286,6570,4380,2190,6282,4188,2094,5994,3996,1998,5706,3804,1902,5418,3612,1806,5130,3420,1710,4842,3228,1614,4554,3036,1518,2852],[9180,6885,4590,2295,6597,4398,2199,6309,4206,2103,6021,4014,2007,5733,3822,1911,5445,3630,1815,5157,3438,1719,4869,3246,1623,4581,3054,1527,2870],[13608,10206,6804,3402,9774,6516,3258,9342,6228,3114,8910,5940,2970,8478,5652,2826,8046,5364,2682,7614,5076,2538,7182,4788,2394,6750,4500,2250,5724],[13644,10233,6822,3411,9801,6534,3267,9369,6246,3123,8937,5958,2979,8505,5670,2835,8073,5382,2691,7641,5094,2547,7209,4806,2403,6777,4518,2259,5742],[13680,10260,6840,3420,9828,6552,3276,9396,6264,3132,8964,5976,2988,8532,5688,2844,8100,5400,2700,7668,5112,2556,7236,4824,2412,6804,4536,2268,5760],[13716,10287,6858,3429,9855,6570,3285,9423,6282,3141,8991,5994,2997,8559,5706,2853,8127,5418,2709,7695,5130,2565,7263,4842,2421,6831,4554,2277,5778],[18144,13608,9072,4536,13032,8688,4344,12456,8304,4152,11880,7920,3960,11304,7536,3768,10728,7152,3576,10152,6768,3384,9576,6384,3192,9000,6000,3000,7632],[18180,13635,9090,4545,13059,8706,4353,12483,8322,4161,11907,7938,3969,11331,7554,3777,10755,7170,3585,10179,6786,3393,9603,6402,3201,9027,6018,3009,7650],[18216,13662,9108,4554,13086,8724,4362,12510,8340,4170,11934,7956,3978,11358,7572,3786,10782,7188,3594,10206,6804,3402,9630,6420,3210,9054,6036,3018,7668],[18252,13689,9126,4563,13113,8742,4371,12537,8358,4179,11961,7974,3987,11385,7590,3795,10809,7206,3603,10233,6822,3411,9657,6438,3219,9081,6054,3027,7686],[5976,4482,2988,1494,4290,2860,1430,4098,2732,1366,3906,2604,1302,3714,2476,1238,3522,2348,1174,3330,2220,1110,3138,2092,1046,2946,1964,982,2508],[6012,4509,3006,1503,4317,2878,1439,4125,2750,1375,3933,2622,1311,3741,2494,1247,3549,2366,1183,3357,2238,1119,3165,2110,1055,2973,1982,991,2526],[6048,4536,3024,1512,4344,2896,1448,4152,2768,1384,3960,2640,1320,3768,2512,1256,3576,2384,1192,3384,2256,1128,3192,2128,1064,3000,2000,1000,2544],[6084,4563,3042,1521,4371,2914,1457,4179,2786,1393,3987,2658,1329,3795,2530,1265,3603,2402,1201,3411,2274,1137,3219,2146,1073,3027,2018,1009,2562],[11952,8964,5976,2988,8580,5720,2860,8196,5464,2732,7812,5208,2604,7428,4952,2476,7044,4696,2348,6660,4440,2220,6276,4184,2092,5892,3928,1964,5016],[11988,8991,5994,2997,8607,5738,2869,8223,5482,2741,7839,5226,2613,7455,4970,2485,7071,4714,2357,6687,4458,2229,6303,4202,2101,5919,3946,1973,5034],[12024,9018,6012,3006,8634,5756,2878,8250,5500,2750,7866,5244,2622,7482,4988,2494,7098,4732,2366,6714,4476,2238,6330,4220,2110,5946,3964,1982,5052],[12060,9045,6030,3015,8661,5774,2887,8277,5518,2759,7893,5262,2631,7509,5006,2503,7125,4750,2375,6741,4494,2248,6357,4238,2119,5973,3982,1991,5070],[17928,13446,8964,4482,12870,8580,4290,12294,8196,4098,11718,7812,3906,11142,7428,3714,10566,7044,3522,9990,6660,3330,9414,6276,3138,8838,5892,2946,7524],[17964,13473,8982,4491,12897,8598,4299,12321,8214,4107,11745,7830,3915,11169,7446,3723,10593,7062,3531,10017,6678,3339,9441,6294,3147,8845,5910,2955,7542],[18000,13500,9000,4500,12924,8616,4308,12348,8232,4116,11772,7848,3924,11196,7464,3732,10620,7080,3540,10044,6696,3348,9468,6312,3156,8892,5928,2964,7560],[18036,13527,9018,4509,12951,8634,4317,12375,8250,4125,11799,7866,3933,11223,7482,3741,10647,7098,3549,10071,6714,3357,9495,6330,3165,8819,5946,2973,7578],[23904,17928,11952,5976,17160,11440,5720,16392,10928,5464,15624,10416,5208,14856,9904,4952,14088,9392,4696,13320,8880,4440,12552,8368,4184,11784,7856,3928,10032],[23940,17955,11970,5985,17187,11458,5729,16419,10946,5473,15651,10434,5217,14883,9922,4961,14115,9410,4705,13347,8889,4449,12579,8386,4193,11811,7874,3937,10050],[23976,17982,11988,5994,17214,11476,5738,16446,10964,5482,15678,10452,5226,14910,9940,4970,14142,9428,4714,13374,8916,4458,12606,8404,4202,11838,7892,3946,10068],[24012,18009,12006,6003,17241,11494,5747,16473,10982,5491,15705,10470,5235,14937,9958,4979,14169,9446,4723,13401,8934,4467,12633,8422,4211,11865,7910,3955,10086]]};
+
+
+/*
+ * DATABASE LATIN TETAP — 112 NAMA MALAIKAT
+ * Dibuat dari huruf dasar (semua karakter sebelum akhiran اييل),
+ * dengan pola HARAKAT asli menurut jumlah 1–7 huruf dasar.
+ * Huruf dasar diberi syakal; akhiran اييل dipertahankan tanpa syakal.
+ * Khusus Latin malaikat: ضمتين = u, كسرتين = i, akhir اييل = il.
+ * VAR dan Sirri Nafs tidak memakai database atau aturan khusus ini.
+ * Data Latin bersifat tetap, sehingga dapat dikoreksi per entri.
+ */
+const MALAIKAT_LATIN_DATABASE = Object.freeze({
+  hakim: Object.freeze({
+    1: "Thaghtsashidiil",
+    2: "Jaghtsawuil",
+    3: "Waghdza'idiil",
+    4: "Haftsayithiil",
+    5: "Baghtayuil",
+    6: "Haghdhayuil",
+    7: "Haghqanuil",
+    8: "Baghzhalihiil",
+    9: "Baghsyafibiil",
+    10: "Baghtaduil",
+    11: "Haghzhamiziil",
+    12: "Yaghtayidiil",
+    13: "Haghroshuil",
+    14: "Waghtsayuil",
+    15: "Haghnabuil",
+    16: "Haghdzafiwiil",
+    17: "Daghqawuil",
+    18: "Haghtsaduil",
+    19: "Haghroshithiil",
+    20: "Daghrokidiil",
+    21: "Haghro'ithiil",
+    22: "Haghzhakihiil",
+    23: "Haghrosiziil",
+    24: "Daghrolihiil",
+    25: "Bayaghqafadiil",
+    26: "Yaghasyibiil",
+    27: "Haghronihiil",
+    28: "Daghdza'ihiil",
+  }),
+  peng1: Object.freeze({
+    1: "Zaghqamihiil",
+    2: "Baghdhashuil",
+    3: "Daghtayuil",
+    4: "Haghzhakihiil",
+    5: "Ghadhthayibiil",
+    6: "Baghdhalithiil",
+    7: "Baghkhasiwiil",
+    8: "Baghsyanihiil",
+    9: "Ghidhahuil",
+    10: "Ghadzfabuil",
+    11: "Waghdhamiiil",
+    12: "Haghnahuil",
+    13: "Haghzhamidiil",
+    14: "Jaghdzamihiil",
+    15: "Baghzhaniiil",
+    16: "Jaghkhahuil",
+    17: "Jaghtsaluil",
+    18: "Haghkhalibiil",
+    19: "Waghqafithiil",
+    20: "Jaghkhamuil",
+    21: "Waghshathuil",
+    22: "Haghsyamihiil",
+    23: "Daghkhafithiil",
+    24: "Jafkhasibiil",
+    25: "Thaghkhakuil",
+    26: "Haghtsasihiil",
+    27: "Daghkhafihiil",
+    28: "Baghtsashidiil",
+  }),
+  peng2: Object.freeze({
+    1: "Baghsyalihiil",
+    2: "Tsakuil",
+    3: "Baghromuil",
+    4: "Baghtanidiil",
+    5: "Tsiyauil",
+    6: "Baghdhakuil",
+    7: "Baghsyakibiil",
+    8: "Tsabuil",
+    9: "Tishathuil",
+    10: "Tsikajuil",
+    11: "Ghazh'ahuil",
+    12: "Baghrokihiil",
+    13: "Baghroliyiil",
+    14: "Baghkhanuil",
+    15: "Ghazhshajuil",
+    16: "Bagh'abuil",
+    17: "Tsail",
+    18: "Baghdzakiwiil",
+    19: "Ghizhafuil",
+    20: "Tsaduil",
+    21: "Bagh'ajuil",
+    22: "Tsabuil",
+    23: "Tsauil",
+    24: "Tsauil",
+    25: "Baghtalithiil",
+    26: "Baghtsashiiil",
+    27: "Tishazuil",
+    28: "Bagh'ahuil",
+  }),
+  peng3: Object.freeze({
+    1: "Qakhuil",
+    2: "Shawuil",
+    3: "Qikajuil",
+    4: "Qamuil",
+    5: "Fazuil",
+    6: "Qanuil",
+    7: "Qisabuil",
+    8: "'ahuil",
+    9: "'ahuil",
+    10: "Shathuil",
+    11: "Qikahuil",
+    12: "Qiladuil",
+    13: "Qiyaduil",
+    14: "Qiyajuil",
+    15: "Qahuil",
+    16: "Qawuil",
+    17: "'awuil",
+    18: "Qimawuil",
+    19: "Qaluil",
+    20: "Fail",
+    21: "Qazuil",
+    22: "'ahuil",
+    23: "'azuil",
+    24: "'awuil",
+    25: "Qikahuil",
+    26: "Fimawuil",
+    27: "'ajuil",
+    28: "Qathuil",
+  })
+});
+
+const HARAKAT={1:['فتحة'],2:['فتحة','ضمتين'],3:['كسرة','فتحة','ضمتين'],4:['فتحة','سكون','فتحة','ضمتين'],5:['فتحة','سكون','فتحة','كسرة','كسرتين'],6:['فتحة','فتحة','سكون','فتحة','فتحة','كسرتين'],7:['فتحة','سكون','فتحة','سكون','فتحة','كسرة','كسرتين']};
+const MARK={'فتحة':'َ','قتحة':'َ','سكون':'ْ','كسرة':'ِ','كسرتين':'ٍ','ضمتين':'ٌ'};
+
+const DASH_IDS=[
+  'dashNama','dashVar','dashHakim','dashPeng1','dashPeng2','dashPeng3',
+  'dashTabiat','dashPlanet','dashManzilah','dashSymbolLetter','dashSymbolValue','dashSirri'
+];
+
+function $(id){return document.getElementById(id)}
+function setText(id,val){
+  const el=$(id);
+  if(el) el.textContent=(val==null||val==='')?'-':String(val);
+}
+function setError(msg){
+  const el=$('errorBox');
+  if(!el)return;
+  el.style.display=msg?'block':'none';
+  el.textContent=msg||'';
+}
+
+function cleanNameExcel(name){
+  return Array.from(name||'').map(function(ch){
+    if(ch===' '||ch.charCodeAt(0)===160)return '';
+    if(ch==='أ'||ch==='إ'||ch==='آ')return 'ا';
+    if(ch==='ؤ')return 'و';
+    if(ch==='ئ')return 'ي';
+    if(ch==='ء')return '';
+    if(ch==='ة')return 'ه';
+    return ch;
+  }).join('');
+}
+
+function modExcel(n,d){
+  const r=n%d;
+  return r===0?d:r;
+}
+
+function numberToLettersExcel(n){
+  n=Number(n)||0;
+  const vals=[];
+  if(n>=100000) vals.push(Math.floor(n/100000)*100);
+  vals.push(
+    Math.floor((n%100000)/10000)*10,
+    Math.floor((n%10000)/1000),
+    1000,
+    Math.floor((n%1000)/100)*100,
+    n%10,
+    Math.floor((n%100)/10)*10
+  );
+  return vals.filter(v=>v!==0&&v!=='').map(v=>DATA.numToLetter[String(v)]||'').reverse().join('');
+}
+
+
+function normalizeTah(ch){
+  return ch==='ه'?'هـ':ch;
+}
+
+function calcTahbatamDashboard(name){
+  let total=0;
+  const chars=Array.from(cleanNameExcel(name));
+  chars.forEach(function(raw,i){
+    if(i>=DATA.thRows.length)return;
+    const col=DATA.thHeaders.indexOf(normalizeTah(raw));
+    if(col>=0) total+=Number(DATA.thRows[i][col])||0;
+  });
+  return total;
+}
+
+function calcFormulaC7_TNA(name){
+  /*
+    Mengikuti Excel sheet Formula:
+    C7 = SUM(C6:BK6)
+
+    Baris 3  = No Urut 61 sampai 1
+    Baris 4  = huruf hijaiyah dari nama yang sudah dinormalisasi
+    Baris 5  = nilai huruf hijaiyah dari Data-data
+    Baris 6  = No Urut x Nilai Huruf
+    C7       = total akumulasi baris 6
+
+    Catatan:
+    Walaupun di Excel posisi kolom dimulai dari C=61 sampai BK=1,
+    hasil akhirnya sama dengan menjumlahkan:
+    posisi huruf ke-1 x nilai huruf ke-1
+    sampai posisi huruf ke-61 x nilai huruf ke-61.
+  */
+  const chars = Array.from(cleanNameExcel(name)).slice(0,61);
+  let total = 0;
+
+  for(let posisi=1; posisi<=61; posisi++){
+    const huruf = chars[posisi-1] || 0;
+    const nilaiHuruf = huruf===0 ? 0 : (Number(DATA.abjad[huruf]) || 0);
+    total += posisi * nilaiHuruf;
+  }
+
+  return total;
+}
+
+function calcTNAExcel(name){
+  return calcFormulaC7_TNA(name);
+}
+
+function calculateDashboard(name){
+  const tna=calcTNAExcel(name);
+  const m28=modExcel(tna,28);
+  const m7=modExcel(tna,7);
+  const m4=modExcel(tna,4);
+  const sirriCode=calcTahbatamDashboard(name);
+  return {
+    nama:name,
+    varName:numberToLettersExcel(tna),
+    varCode:tna,
+    hakimName:DATA.hakimName[String(m28)],
+    hakimLatin:MALAIKAT_LATIN_DATABASE.hakim[String(m28)],
+    hakimCode:DATA.hakimCode[String(m28)],
+    peng1Name:DATA.peng1Name[String(m28)],
+    peng1Latin:MALAIKAT_LATIN_DATABASE.peng1[String(m28)],
+    peng1Code:DATA.peng1Code[String(m28)],
+    peng2Name:DATA.peng2Name[String(m28)],
+    peng2Latin:MALAIKAT_LATIN_DATABASE.peng2[String(m28)],
+    peng2Code:DATA.peng2Code[String(m28)],
+    peng3Name:DATA.peng3Name[String(m28)],
+    peng3Latin:MALAIKAT_LATIN_DATABASE.peng3[String(m28)],
+    peng3Code:DATA.peng3Code[String(m28)],
+    tabiat:DATA.tabiat[String(m4)],
+    planet:DATA.planet[String(m7)],
+    manzilah:DATA.manzilah[String(m28)],
+    symbolLetter:DATA.symbolLetter[String(m28)],
+    symbolValue:DATA.symbolValue[String(m28)],
+    sirriName:numberToLettersExcel(sirriCode),
+    sirriCode:sirriCode
+  };
+}
+
+function clearDashboard(){
+  DASH_IDS.forEach(id=>setText(id,'-'));
+  setError('');
+}
+
+
+function stripMarksDashboard(s){
+  return Array.from(s||'').filter(function(ch){
+    const c=ch.charCodeAt(0);
+    return !(c>=0x064B&&c<=0x065F)&&c!==0x0670;
+  }).join('');
+}
+
+function splitSuffixDashboard(raw,excludeSuffix){
+  const clean=stripMarksDashboard(raw||'');
+  if(excludeSuffix&&clean.endsWith('ييل')){
+    return {base:clean.slice(0,-3),suffix:'ييل'};
+  }
+  return {base:clean,suffix:''};
+}
+
+function applyHarakatDashboard(raw,excludeSuffix){
+  const x=splitSuffixDashboard(raw,excludeSuffix);
+  const arr=Array.from(x.base);
+  const pat=HARAKAT[arr.length]||[];
+  return arr.map(function(ch,i){
+    return ch+(MARK[pat[i]]||'');
+  }).join('')+x.suffix;
+}
+
+/*
+ * HARAKAT KHUSUS 112 NAMA MALAIKAT
+ * Hitung jumlah huruf dasar sebelum akhiran اييل (bukan sebelum ييل).
+ * Setiap harakat lama di data sumber dinormalisasi sebelum pola baru.
+ * Contoh: قكحاييل → قِكَحٌاييل.
+ * Tidak dipakai untuk VAR maupun Sirri Nafs.
+ */
+function applyHarakatMalaikatDashboard(raw){
+  const clean=stripMarksDashboard(String(raw||''));
+  if(!clean.endsWith('اييل'))throw new Error('Akhiran nama malaikat tidak sesuai: '+raw);
+  const dasar=Array.from(clean.slice(0,-4));
+  const pola=HARAKAT[dasar.length];
+  if(!pola || pola.length!==dasar.length)throw new Error('Jumlah huruf dasar malaikat tidak didukung: '+dasar.length);
+  return dasar.map(function(ch,i){return ch+(MARK[pola[i]]||'');}).join('')+'اييل';
+}
+
+function combineNameCode(name,code,excludeSuffix){
+  if((name==null||name==='')&&(code==null||code==='')) return '-';
+  const displayedName = name ? applyHarakatDashboard(String(name), !!excludeSuffix) : '-';
+  return displayedName+' | '+String(code||'-');
+}
+
+
+/*
+ * Aturan Latin pelafalan Indonesia.
+ * Hanya mengubah cara penampilan; tidak mengubah rumus/angka referensi.
+ * Hanya untuk nama VAR dan Sirri Nafs yang dihitung dinamis.
+ * Semua huruf Arab diambil dari keluaran applyHarakatDashboard().
+ * Pengecualian vokal contoh pengguna: رَ dibaca "ro", طْ dibaca "th".
+ * Data Latin malaikat memakai tabel MALAIKAT_LATIN_DATABASE terpisah.
+ */
+const LATIN_ARABIC_CONSONANTS = Object.freeze({
+  'ا':'','أ':'','إ':'','آ':'a','ٱ':'',
+  'ب':'b','ت':'t','ث':'ts','ج':'j','ح':'h','خ':'kh',
+  'د':'d','ذ':'dz','ر':'r','ز':'z','س':'s','ش':'sy',
+  'ص':'sh','ض':'dh','ط':'th','ظ':'zh','ع':"'",'غ':'gh',
+  'ف':'f','ق':'q','ك':'k','ل':'l','م':'m','ن':'n',
+  'ه':'h','ة':'h','و':'w','ي':'y','ى':'a',
+  'ء':"'",'ؤ':"'",'ئ':"'",'ﻻ':'la'
+});
+const LATIN_ARABIC_VOWELS = Object.freeze({
+  'َ':'a','ِ':'i','ُ':'u','ً':'an','ٍ':'in','ٌ':'un'
+});
+
+function latinizeArabicIndonesianDashboard(arabic){
+  const chars=Array.from(String(arabic||'').normalize('NFC'));
+  let latin='';
+  let prevVowel='';
+  for(let i=0;i<chars.length;i++){
+    const letter=chars[i];
+    if(letter==='ـ')continue;
+    if(letter===' '||letter==='-'||letter==='‌'){
+      latin+=letter==='‌'?'':letter;
+      prevVowel='';
+      continue;
+    }
+    // Aturan tetap: gabungan persis اٍييل di akhir dibaca "il".
+    // Dijalankan sebelum penanganan alif/akhiran ييل agar tidak jadi "ainyil".
+    if(letter==='ا' && chars.slice(i).join('')==='اٍييل'){
+      latin+='il';
+      break;
+    }
+    // Kunci setiap rangkaian ييل menjadi "il", tidak terbatas pada akhiran
+    // maupun pada rangkaian yang didahului اٍ.
+    if(letter==='ي' && chars.slice(i,i+3).join('')==='ييل'){
+      latin+='il';
+      i+=2;
+      prevVowel='i';
+      continue;
+    }
+    // Abaikan tanda baca harakat yang berdiri sendiri.
+    if(/[ً-ٰٟ]/.test(letter))continue;
+    if(!Object.prototype.hasOwnProperty.call(LATIN_ARABIC_CONSONANTS,letter)){
+      latin+=letter;
+      prevVowel='';
+      continue;
+    }
+    let marks='';
+    while(i+1<chars.length && /[ً-ٰٟ]/.test(chars[i+1])){
+      marks+=chars[++i];
+    }
+    let consonant=LATIN_ARABIC_CONSONANTS[letter];
+    if(marks.includes('ّ'))consonant+=consonant;
+    let vowel='';
+    for(const mark of Array.from(marks)){
+      if(Object.prototype.hasOwnProperty.call(LATIN_ARABIC_VOWELS,mark)){
+        vowel=LATIN_ARABIC_VOWELS[mark];
+        break;
+      }
+    }
+    if(letter==='ر' && vowel==='a')vowel='o';
+    if(letter==='ر' && vowel==='an')vowel='on';
+    if(letter==='ا'||letter==='أ'||letter==='إ'||letter==='ٱ'){
+      // Alif biasa memanjangkan bunyi "a"; dalam ejaan fonetik
+      // Indonesia tidak harus ditulis dua kali.
+      if(!vowel && prevVowel!=='a')vowel='a';
+    }
+    if(letter==='و' && !marks && prevVowel==='u')consonant='';
+    if(letter==='ي' && !marks && prevVowel==='i')consonant='';
+    latin+=consonant+vowel;
+    prevVowel=vowel || '';
+  }
+  return latin.charAt(0).toUpperCase()+latin.slice(1);
+}
+
+function setArabicLatinDashboard(id,name,code,excludeSuffix,latinFromDatabase){
+  const el=$(id);
+  if(!el)return;
+  // Untuk malaikat, hanya cara pemberian syakal dan Latin yang baru;
+  // kode angka/nama Arab dari DATA tetap sama. VAR/Sirri tetap fungsi asli.
+  el.textContent=excludeSuffix && name
+    ? applyHarakatMalaikatDashboard(name)+' | '+String(code||'-')
+    : combineNameCode(name,code,false);
+  if(!name)return;
+  const arabic=excludeSuffix
+    ? applyHarakatMalaikatDashboard(String(name))
+    : applyHarakatDashboard(String(name),false);
+  // Nama malaikat dari database statis; VAR dan Sirri tetap konversi otomatis.
+  // Tidak menggunakan transliterasi dinamis untuk malaikat.
+  if(excludeSuffix && !latinFromDatabase){
+    throw new Error('Data Latin malaikat tidak tersedia untuk '+id);
+  }
+  const latin=excludeSuffix ? latinFromDatabase : latinizeArabicIndonesianDashboard(arabic);
+  const latinLine=document.createElement('div');
+  latinLine.className='dashboard-latin';
+  latinLine.dir='ltr';
+  latinLine.textContent=latin;
+  el.appendChild(latinLine);
+}
+
+function fillDashboard(r){
+  setText('dashNama',r.nama);
+  setArabicLatinDashboard('dashVar',r.varName,r.varCode,false);
+  setArabicLatinDashboard('dashHakim',r.hakimName,r.hakimCode,true,r.hakimLatin);
+  setArabicLatinDashboard('dashPeng1',r.peng1Name,r.peng1Code,true,r.peng1Latin);
+  setArabicLatinDashboard('dashPeng2',r.peng2Name,r.peng2Code,true,r.peng2Latin);
+  setArabicLatinDashboard('dashPeng3',r.peng3Name,r.peng3Code,true,r.peng3Latin);
+  setText('dashTabiat',r.tabiat);
+  setText('dashPlanet',r.planet);
+  setText('dashManzilah',r.manzilah);
+  setText('dashSymbolLetter',r.symbolLetter);
+  setText('dashSymbolValue',r.symbolValue);
+  setArabicLatinDashboard('dashSirri',r.sirriName,r.sirriCode,false);
+}
+
+function resetDashboardName(){
+  const el=$('dashboardNameInput');
+  if(el)el.value='';
+  clearDashboard();
+}
+
+function exampleDashboardName(){
+  const el=$('dashboardNameInput');
+  if(el)el.value='ريزا حسين بن شدة بن حسن';
+  clearDashboard();
+}
+
+function processDashboardName(){
+  try{
+    const el=$('dashboardNameInput');
+    const name=el?el.value.trim():'';
+    if(!name){clearDashboard();return;}
+    const r=calculateDashboard(name);
+    fillDashboard(r);
+    setError('');
+  }catch(err){
+    setError('Error proses: '+err.message);
+    console.error(err);
+  }
+}
+
+
+function printDashboard(){
+  window.print();
+}
+window.printDashboard=printDashboard;
+
+window.resetDashboardName=resetDashboardName;
+window.exampleDashboardName=exampleDashboardName;
+window.processDashboardName=processDashboardName;
+
+const nameInput=$('dashboardNameInput');
+if(nameInput)nameInput.addEventListener('input',clearDashboard);
+clearDashboard();
+
+(function runDashboardTests(){
+  // Contoh aktif: Riza. Pemeriksaan hanya memastikan logika dan database
+  // tidak berubah ketika contoh input pada tombol Contoh diganti.
+  const input='ريزا حسين بن شدة بن حسن';
+  const tna=calcFormulaC7_TNA(input);
+  console.assert(tna===7872,'Contoh baru TNA seharusnya 7872',tna);
+  const r=calculateDashboard(input);
+  console.assert(r.varCode===7872,'VAR angka contoh baru',r.varCode);
+  console.assert(r.varName===numberToLettersExcel(7872),'VAR huruf contoh baru',r.varName);
+  console.assert(r.hakimName==='حفثيطاييل' && String(r.hakimCode)==='8519','Hakim indeks 4',r.hakimName,r.hakimCode);
+  console.assert(r.peng1Name==='هغظكهاييل' && String(r.peng1Code)==='5960','Pengawas 1 indeks 4',r.peng1Name,r.peng1Code);
+  console.assert(r.peng2Name==='بغتنداييل' && String(r.peng2Code)==='2454','Pengawas 2 indeks 4',r.peng2Name,r.peng2Code);
+  console.assert(r.peng3Name==='قماييل' && String(r.peng3Code)==='140','Pengawas 3 indeks 4',r.peng3Name,r.peng3Code);
+  console.assert(r.tabiat==='Api' && r.planet==='Matahari','Tabiat/Planet indeks 4',r.tabiat,r.planet);
+  console.assert(r.manzilah===DATA.manzilah['4'],'Manzilah indeks 4',r.manzilah);
+  console.assert(r.symbolLetter==='د' && Number(r.symbolValue)===444,'Simbol indeks 4',r.symbolLetter,r.symbolValue);
+  console.assert(r.sirriCode===10104 && r.sirriName==='دقغي','Sirri Nafs contoh baru',r.sirriCode,r.sirriName);
+  console.assert(applyHarakatMalaikatDashboard(r.peng3Name)==='قَمٌاييل','Syakal Malaikat Pengawas 3',r.peng3Name);
+  console.assert(r.peng3Latin==='Qamuil','Latin Malaikat Pengawas 3',r.peng3Latin);
+  // Regresi contoh lama yang telah diaudit: rumusnya tetap sama.
+  const old=calculateDashboard('احمد بن عبد الله بن امنة');
+  console.assert(old.varCode===4239 && old.sirriCode===13616,'Regresi angka contoh lama',old.varCode,old.sirriCode);
+})();
+
+</script>
+<script>
+// GitHub Pages: simpan berkas untuk dibuka lagi saat tidak ada internet.
+// Android APK: berjalan dari file lokal, tanpa service worker.
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js').catch(function(err){
+      console.warn('Penyimpanan offline tidak aktif:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
+<!-- Reference design attribution when required: Designed by macrovector / Freepik -->

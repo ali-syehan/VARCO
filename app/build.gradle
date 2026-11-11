@@ -1,0 +1,29 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'id.alisyehan.varqo'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'id.alisyehan.varqo'
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName '1.0.0'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    // Satu sumber HTML: folder docs dipakai oleh GitHub Pages dan juga dikemas ke APK.
+    sourceSets {
+        main {
+            assets.srcDirs += ['../docs']
+        }
+    }
+}
